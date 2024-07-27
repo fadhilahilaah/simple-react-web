@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import CardProduct from "../components/Fragments/CardProduct";
 import Button from "../components/Elements/Button";
 
@@ -65,6 +65,17 @@ const ProductsPage = () => {
     }
   };
 
+  // useRef
+  const cartRef = useRef(null);
+
+  useEffect(() => {
+    if (cart.length > 0) {
+      cartRef.current.style.display = "block";
+    } else {
+      cartRef.current.style.display = "none";
+    }
+  }, [cart]);
+
   return (
     <Fragment>
       {/* navbar start */}
@@ -101,7 +112,7 @@ const ProductsPage = () => {
         {/* card product end */}
 
         {/* cart start */}
-        <div className="w-2/6">
+        <div className="w-2/6 shadow-sm" ref={cartRef}>
           <h1 className="text-3xl font-bold text-blue-600 ml-5 mb-2">Cart</h1>
 
           <table className="text-left table-auto border-separate border-spacing-x-5">
@@ -139,6 +150,8 @@ const ProductsPage = () => {
                   </tr>
                 );
               })}
+
+              {/* total price */}
               <tr>
                 <td colSpan={3}>
                   <b>Total Price</b>
