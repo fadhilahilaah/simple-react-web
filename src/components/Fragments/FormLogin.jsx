@@ -22,7 +22,7 @@ const FormLogin = () => {
       <InputForm
         label="Password"
         type="password"
-        placeholder="*******"
+        placeholder="Enter Password"
         name="password"
       />
 
