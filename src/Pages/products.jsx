@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import CardProduct from "../components/Fragments/CardProduct";
 import Button from "../components/Elements/Button";
 
@@ -29,12 +29,23 @@ const products = [
 const email = localStorage.getItem("email");
 
 const ProductsPage = () => {
-  const [cart, setCart] = useState([
-    {
-      id: 1,
-      qty: 1,
-    },
-  ]);
+  const [cart, setCart] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+
+  useEffect(() => {
+    setCart(JSON.parse(localStorage.getItem("cart")) || []);
+  }, []);
+
+  useEffect(() => {
+    if (cart.length > 0) {
+      const sum = cart.reduce((acc, item) => {
+        const product = products.find((product) => product.id === item.id);
+        return acc + product.price * item.qty;
+      }, 0);
+      setTotalPrice(sum);
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+  }, [cart]);
 
   const handleLogout = () => {
     localStorage.removeItem("email");
@@ -43,22 +54,34 @@ const ProductsPage = () => {
   };
 
   const handleAddToCart = (id) => {
-    if(cart.find(item => item.id === id)) {
-      setCart(cart.map(item => item.id === id ? {...item, qty: item.qty + 1} : item))
+    if (cart.find((item) => item.id === id)) {
+      setCart(
+        cart.map((item) =>
+          item.id === id ? { ...item, qty: item.qty + 1 } : item
+        )
+      );
     } else {
-      setCart([...cart, {id, qty: 1}])
+      setCart([...cart, { id, qty: 1 }]);
     }
   };
 
   return (
     <Fragment>
-      <div className="flex items-center px-10 justify-end h-20 bg-blue-400 text-white">
-        {email}
-        <Button onClick={handleLogout} style="ml-5 bg-black">
-          Logout
-        </Button>
+      {/* navbar start */}
+      <div className="flex items-center px-10 justify-between h-20 bg-blue-400 text-white">
+        <h1 className="text-3xl font-bold text-white">
+          Nuka<span className="text-black">Dev</span>
+        </h1>
+        <div>
+          {email}
+          <Button onClick={handleLogout} style="ml-5 bg-black">
+            Logout
+          </Button>
+        </div>
       </div>
+      {/* navbar end */}
 
+      {/* card product start */}
       <div className="flex justify-center py-5">
         <div className="flex w-4/6 flex-wrap">
           {products.map((product) => (
@@ -75,7 +98,9 @@ const ProductsPage = () => {
             </CardProduct>
           ))}
         </div>
+        {/* card product end */}
 
+        {/* cart start */}
         <div className="w-2/6">
           <h1 className="text-3xl font-bold text-blue-600 ml-5 mb-2">Cart</h1>
 
@@ -114,9 +139,24 @@ const ProductsPage = () => {
                   </tr>
                 );
               })}
+              <tr>
+                <td colSpan={3}>
+                  <b>Total Price</b>
+                </td>
+                <td>
+                  <b>
+                    Rp{" "}
+                    {totalPrice.toLocaleString("id-ID", {
+                      styles: "currency",
+                      currency: "IDR",
+                    })}
+                  </b>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
+        {/* cart end */}
       </div>
     </Fragment>
   );
