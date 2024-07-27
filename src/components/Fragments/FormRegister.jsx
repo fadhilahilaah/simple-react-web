@@ -30,7 +30,7 @@ const FormRegister = () => {
       <InputForm
         label="Password"
         type="password"
-        placeholder="*******"
+        placeholder="Enter Password"
         name="password"
       />
 
@@ -38,7 +38,7 @@ const FormRegister = () => {
       <InputForm
         label="Confirm Password"
         type="password"
-        placeholder="*******"
+        placeholder="Enter Password"
         name="c-password"
       />
 
