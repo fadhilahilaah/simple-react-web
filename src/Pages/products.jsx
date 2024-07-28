@@ -2,24 +2,40 @@ import React, { Fragment, useEffect, useRef, useState } from "react";
 import CardProduct from "../components/Fragments/CardProduct";
 import Button from "../components/Elements/Button";
 import { getProducts } from "../services/product.service";
-
-const email = localStorage.getItem("email");
+import { getUsername } from "../services/auth.service";
 
 const ProductsPage = () => {
   const [cart, setCart] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [products, setProducts] = useState([]);
+  const [username, setUsername] = useState("");
 
+  // save cart items to local storage
   useEffect(() => {
     setCart(JSON.parse(localStorage.getItem("cart")) || []);
   }, []);
 
+  // get username
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    // Check if token exists
+    if (token) {
+      // Extract and set the username from the token
+      setUsername(getUsername(token));
+    } else {
+      // If no token is found, redirect to login page
+      window.location.href = "/login";
+    }
+  }, []);
+
+  // get products
   useEffect(() => {
     getProducts((data) => {
       setProducts(data);
     });
   }, []);
 
+  // calculate total price
   useEffect(() => {
     if (products.length > 0 && cart.length > 0) {
       const sum = cart.reduce((acc, item) => {
@@ -32,8 +48,7 @@ const ProductsPage = () => {
   }, [cart, products]);
 
   const handleLogout = () => {
-    localStorage.removeItem("email");
-    localStorage.removeItem("password");
+    localStorage.removeItem("token");
     window.location.href = "/login";
   };
 
@@ -52,6 +67,7 @@ const ProductsPage = () => {
   // useRef
   const cartRef = useRef(null);
 
+  // hide cart section when empty
   useEffect(() => {
     if (cart.length > 0) {
       cartRef.current.style.display = "block";
@@ -67,8 +83,9 @@ const ProductsPage = () => {
         <h1 className="text-3xl font-bold text-white">
           Nuka<span className="text-black">Dev</span>
         </h1>
+
         <div>
-          {email}
+          {username}
           <Button onClick={handleLogout} style="ml-5 bg-black">
             Logout
           </Button>
