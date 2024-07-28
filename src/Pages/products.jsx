@@ -3,12 +3,13 @@ import CardProduct from "../components/Fragments/CardProduct";
 import Button from "../components/Elements/Button";
 import { getProducts } from "../services/product.service";
 import { getUsername } from "../services/auth.service";
+import useLogin from "../hooks/useLogin";
 
 const ProductsPage = () => {
   const [cart, setCart] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [products, setProducts] = useState([]);
-  const [username, setUsername] = useState("");
+  const username = useLogin();
 
   // save cart items to local storage
   useEffect(() => {
@@ -16,17 +17,6 @@ const ProductsPage = () => {
   }, []);
 
   // get username
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    // Check if token exists
-    if (token) {
-      // Extract and set the username from the token
-      setUsername(getUsername(token));
-    } else {
-      // If no token is found, redirect to login page
-      window.location.href = "/login";
-    }
-  }, []);
 
   // get products
   useEffect(() => {
